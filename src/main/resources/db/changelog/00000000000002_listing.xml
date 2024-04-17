@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="00000000000002-seq" author="codecake">
+        <createSequence sequenceName="listing_generator" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="00000000000002-listing" author="codecake">
+        <createTable tableName="listing">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="public_id" type="${uuidType}">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="title" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="guests" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bedrooms" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="beds" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="bathrooms" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="int">
+                <constraints nullable="false"/>
+            </column>
+            <column name="category" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="landlord_public_id" type="${uuidType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="landlord_public_id" baseTableName="listing"
+                                 constraintName="fk_landlord_id" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="public_id"
+                                 referencedTableName="airbnb_user" validate="true"/>
+    </changeSet>
+
+    <changeSet id="00000000000002-seq-picture" author="codecake">
+        <createSequence sequenceName="listing_picture_generator" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+    <changeSet id="00000000000002-picture" author="codecake">
+        <createTable tableName="listing_picture">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="listing_fk" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file" type="${blobType}">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_cover" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+            <column name="file_content_type" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="timestamp"/>
+            <column name="last_modified_date" type="timestamp"/>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="listing_fk" baseTableName="listing_picture"
+                                 constraintName="fk_listing_id" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="listing"
+                                 validate="true"
+                                 onDelete="CASCADE"/>
+    </changeSet>
+</databaseChangeLog>
