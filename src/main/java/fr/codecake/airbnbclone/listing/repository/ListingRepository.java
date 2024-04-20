@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ListingRepository extends JpaRepository<Listing, Long> {
@@ -25,4 +26,6 @@ public interface ListingRepository extends JpaRepository<Listing, Long> {
     @Query("SELECT listing from Listing listing LEFT JOIN FETCH listing.pictures picture" +
             " WHERE picture.isCover = true")
     Page<Listing> findAllWithCoverOnly(Pageable pageable);
+
+    Optional<Listing> findByPublicId(UUID publicId);
 }
