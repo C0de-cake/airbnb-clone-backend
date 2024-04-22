@@ -2,6 +2,7 @@ package fr.codecake.airbnbclone.listing.application;
 
 import fr.codecake.airbnbclone.listing.application.dto.CreatedListingDTO;
 import fr.codecake.airbnbclone.listing.application.dto.DisplayCardListingDTO;
+import fr.codecake.airbnbclone.listing.application.dto.ListingCreateBookingDTO;
 import fr.codecake.airbnbclone.listing.application.dto.SaveListingDTO;
 import fr.codecake.airbnbclone.listing.domain.Listing;
 import fr.codecake.airbnbclone.listing.mapper.ListingMapper;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -63,6 +65,9 @@ public class LandlordService {
         } else {
             return State.<UUID, String>builder().forUnauthorized("User not authorized to delete this listing");
         }
+    }
 
+    public Optional<ListingCreateBookingDTO> getByListingPublicId(UUID publicId) {
+        return listingRepository.findByPublicId(publicId).map(listingMapper::mapListingToListingCreateBookingDTO);
     }
 }
