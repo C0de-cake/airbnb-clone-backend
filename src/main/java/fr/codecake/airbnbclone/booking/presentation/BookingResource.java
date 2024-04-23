@@ -2,6 +2,7 @@ package fr.codecake.airbnbclone.booking.presentation;
 
 import fr.codecake.airbnbclone.booking.application.BookingService;
 import fr.codecake.airbnbclone.booking.application.dto.BookedDateDTO;
+import fr.codecake.airbnbclone.booking.application.dto.BookedListingDTO;
 import fr.codecake.airbnbclone.booking.application.dto.NewBookingDTO;
 import fr.codecake.airbnbclone.sharedkernel.service.State;
 import fr.codecake.airbnbclone.sharedkernel.service.StatusNotification;
@@ -38,5 +39,21 @@ public class BookingResource {
     @GetMapping("check-availability")
     public ResponseEntity<List<BookedDateDTO>> checkAvailability(@RequestParam UUID listingPublicId) {
         return ResponseEntity.ok(bookingService.checkAvailability(listingPublicId));
+    }
+
+    @GetMapping("get-booked-listing")
+    public ResponseEntity<List<BookedListingDTO>> getBookedListing() {
+        return ResponseEntity.ok(bookingService.getBookedListing());
+    }
+
+    @DeleteMapping("cancel")
+    public ResponseEntity<UUID> cancel(@RequestParam UUID bookingPublicId, @RequestParam UUID listingPublicId) {
+        State<UUID, String> cancelState = bookingService.cancel(bookingPublicId, listingPublicId);
+        if (cancelState.getStatus().equals(StatusNotification.ERROR)) {
+            ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, cancelState.getError());
+            return ResponseEntity.of(problemDetail).build();
+        } else {
+            return ResponseEntity.ok(bookingPublicId);
+        }
     }
 }

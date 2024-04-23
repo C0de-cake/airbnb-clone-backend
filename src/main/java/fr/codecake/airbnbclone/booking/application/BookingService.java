@@ -1,12 +1,15 @@
 package fr.codecake.airbnbclone.booking.application;
 
 import fr.codecake.airbnbclone.booking.application.dto.BookedDateDTO;
+import fr.codecake.airbnbclone.booking.application.dto.BookedListingDTO;
 import fr.codecake.airbnbclone.booking.application.dto.NewBookingDTO;
 import fr.codecake.airbnbclone.booking.domain.Booking;
 import fr.codecake.airbnbclone.booking.mapper.BookingMapper;
 import fr.codecake.airbnbclone.booking.repository.BookingRepository;
 import fr.codecake.airbnbclone.listing.application.LandlordService;
+import fr.codecake.airbnbclone.listing.application.dto.DisplayCardListingDTO;
 import fr.codecake.airbnbclone.listing.application.dto.ListingCreateBookingDTO;
+import fr.codecake.airbnbclone.listing.application.dto.vo.PriceVO;
 import fr.codecake.airbnbclone.sharedkernel.service.State;
 import fr.codecake.airbnbclone.user.application.UserService;
 import fr.codecake.airbnbclone.user.application.dto.ReadUserDTO;
@@ -70,5 +73,41 @@ public class BookingService {
     public List<BookedDateDTO> checkAvailability(UUID publicId) {
         return bookingRepository.findAllByFkListing(publicId)
                 .stream().map(bookingMapper::bookingToCheckAvailability).toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<BookedListingDTO> getBookedListing() {
+        ReadUserDTO connectedUser = userService.getAuthenticatedUserFromSecurityContext();
+        List<Booking> allBookings = bookingRepository.findAllByFkTenant(connectedUser.publicId());
+        List<UUID> allListingPublicIDs = allBookings.stream().map(Booking::getFkListing).toList();
+        List<DisplayCardListingDTO> allListings = landlordService.getCardDisplayByListingPublicId(allListingPublicIDs);
+        return mapBookingToBookedListing(allBookings, allListings);
+    }
+
+    private List<BookedListingDTO> mapBookingToBookedListing(List<Booking> allBookings, List<DisplayCardListingDTO> allListings) {
+        return allBookings.stream().map(booking -> {
+            DisplayCardListingDTO displayCardListingDTO = allListings
+                    .stream()
+                    .filter(listing -> listing.publicId().equals(booking.getFkListing()))
+                    .findFirst()
+                    .orElseThrow();
+            BookedDateDTO dates = bookingMapper.bookingToCheckAvailability(booking);
+            return new BookedListingDTO(displayCardListingDTO.cover(),
+                    displayCardListingDTO.location(),
+                    dates, new PriceVO(booking.getTotalPrice()),
+                    booking.getPublicId(), displayCardListingDTO.publicId());
+        }).toList();
+    }
+
+    @Transactional
+    public State<UUID, String> cancel(UUID bookingPublicId, UUID listingPublicId) {
+        ReadUserDTO connectedUser = userService.getAuthenticatedUserFromSecurityContext();
+        int deleteSuccess = bookingRepository.deleteBookingByFkTenantAndPublicId(connectedUser.publicId(), bookingPublicId);
+
+        if(deleteSuccess >= 1) {
+            return State.<UUID, String>builder().forSuccess(bookingPublicId);
+        } else {
+            return State.<UUID, String>builder().forError("Booking not found");
+        }
     }
 }
