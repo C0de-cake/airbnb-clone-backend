@@ -60,7 +60,7 @@ public class LandlordService {
     @Transactional
     public State<UUID, String> delete(UUID publicId, ReadUserDTO landlord) {
         long deletedSuccessfuly = listingRepository.deleteByPublicIdAndLandlordPublicId(publicId, landlord.publicId());
-        if(deletedSuccessfuly > 0) {
+        if (deletedSuccessfuly > 0) {
             return State.<UUID, String>builder().forSuccess(publicId);
         } else {
             return State.<UUID, String>builder().forUnauthorized("User not authorized to delete this listing");
@@ -76,5 +76,11 @@ public class LandlordService {
                 .stream()
                 .map(listingMapper::listingToDisplayCardListingDTO)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<DisplayCardListingDTO> getByPublicIdAndLandlordPublicId(UUID listingPublicId, UUID landlordPublicId) {
+        return listingRepository.findOneByPublicIdAndLandlordPublicId(listingPublicId, landlordPublicId)
+                .map(listingMapper::listingToDisplayCardListingDTO);
     }
 }
