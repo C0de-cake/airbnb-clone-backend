@@ -135,4 +135,9 @@ public class BookingService {
         List<Booking> allBookings = bookingRepository.findAllByFkListingIn(allPropertyPublicIds);
         return mapBookingToBookedListing(allBookings, allProperties);
     }
+
+    public List<UUID> getBookingMatchByListingIdsAndBookedDate(List<UUID> listingsId, BookedDateDTO bookedDateDTO) {
+        return bookingRepository.findAllMatchWithDate(listingsId, bookedDateDTO.startDate(), bookedDateDTO.endDate())
+                .stream().map(Booking::getFkListing).toList();
+    }
 }

@@ -3,18 +3,17 @@ package fr.codecake.airbnbclone.listing.presentation;
 import fr.codecake.airbnbclone.listing.application.TenantService;
 import fr.codecake.airbnbclone.listing.application.dto.DisplayCardListingDTO;
 import fr.codecake.airbnbclone.listing.application.dto.DisplayListingDTO;
+import fr.codecake.airbnbclone.listing.application.dto.SearchDTO;
 import fr.codecake.airbnbclone.listing.domain.BookingCategory;
 import fr.codecake.airbnbclone.sharedkernel.service.State;
 import fr.codecake.airbnbclone.sharedkernel.service.StatusNotification;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
@@ -38,7 +37,7 @@ public class TenantResource {
     @GetMapping("/get-one")
     public ResponseEntity<DisplayListingDTO> getOne(@RequestParam UUID publicId) {
         State<DisplayListingDTO, String> displayListingState = tenantService.getOne(publicId);
-        if(displayListingState.getStatus().equals(StatusNotification.OK)) {
+        if (displayListingState.getStatus().equals(StatusNotification.OK)) {
             return ResponseEntity.ok(displayListingState.getValue());
         } else {
             ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, displayListingState.getError());
@@ -46,4 +45,9 @@ public class TenantResource {
         }
     }
 
+    @PostMapping("/search")
+    public ResponseEntity<Page<DisplayCardListingDTO>> search(Pageable pageable,
+                                                              @Valid @RequestBody SearchDTO searchDTO) {
+        return ResponseEntity.ok(tenantService.search(pageable, searchDTO));
+    }
 }

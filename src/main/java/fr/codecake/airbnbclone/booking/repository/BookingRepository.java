@@ -24,4 +24,9 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     int deleteBookingByPublicIdAndFkListing(UUID bookingPublicId, UUID listingPublicId);
 
     List<Booking> findAllByFkListingIn(List<UUID> allPropertyPublicIds);
+
+    @Query("SELECT booking FROM Booking booking WHERE " +
+            "NOT (booking.endDate <= :startDate or booking.startDate >= :endDate) " +
+            "AND booking.fkListing IN :fkListings")
+    List<Booking> findAllMatchWithDate(List<UUID> fkListings, OffsetDateTime startDate, OffsetDateTime endDate);
 }
