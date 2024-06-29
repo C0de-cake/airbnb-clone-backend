@@ -20,7 +20,7 @@ Spring boot backend of the airbnb clone
 - IDE ([VSCode](https://code.visualstudio.com/download), [IntelliJ](https://www.jetbrains.com/idea/download/))
 
 ### Clone the repository
-``git clone https://github.com/C0de-cake/spotify-clone-back``
+``git clone https://github.com/C0de-cake/airbnb-clone-back``
 
 ### Launch
 #### Maven
