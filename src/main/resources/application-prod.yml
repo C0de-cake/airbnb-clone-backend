@@ -16,3 +16,16 @@ spring:
   liquibase:
     contexts: prod
     default-schema: airbnb_clone
+
+server:
+  tomcat:
+    remoteip:
+      protocol-header: x-forwarded-proto
+      remote-ip-header: x-forwarded-for
+
+application:
+  cors:
+    allowed-origins: "https://airbnbclone.codecake.fr"
+  auth0:
+    role-landlord-id: ${AUTH0_ROLE_LANDLORD_ID}
+

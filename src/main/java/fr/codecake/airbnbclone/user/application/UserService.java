@@ -1,12 +1,13 @@
 package fr.codecake.airbnbclone.user.application;
 
+import com.auth0.json.auth.UserInfo;
 import fr.codecake.airbnbclone.infrastructure.config.SecurityUtils;
 import fr.codecake.airbnbclone.user.application.dto.ReadUserDTO;
 import fr.codecake.airbnbclone.user.domain.User;
 import fr.codecake.airbnbclone.user.mapper.UserMapper;
 import fr.codecake.airbnbclone.user.repository.UserRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,16 +22,19 @@ public class UserService {
     private static final String UPDATED_AT_KEY = "updated_at";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final Auth0Service auth0Service;
 
-    public UserService(UserRepository userRepository, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, UserMapper userMapper, Auth0Service auth0Service) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.auth0Service = auth0Service;
     }
 
     @Transactional(readOnly = true)
     public ReadUserDTO getAuthenticatedUserFromSecurityContext() {
-        OAuth2User principal = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = SecurityUtils.mapOauth2AttributesToUser(principal.getAttributes());
+        Jwt principal = (Jwt) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UserInfo userInfo = auth0Service.getUserInfo(principal);
+        User user = SecurityUtils.mapOauth2AttributesToUser(userInfo.getValues());
         return getByEmail(user.getEmail()).orElseThrow();
     }
 
@@ -40,8 +44,9 @@ public class UserService {
         return oneByEmail.map(userMapper::readUserDTOToUser);
     }
 
-    public void syncWithIdp(OAuth2User oAuth2User, boolean forceResync) {
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+    public void syncWithIdp(Jwt jwtToken, boolean forceResync) {
+        UserInfo userInfo = auth0Service.getUserInfo(jwtToken);
+        Map<String, Object> attributes = userInfo.getValues();
         User user = SecurityUtils.mapOauth2AttributesToUser(attributes);
         Optional<User> existingUser = userRepository.findOneByEmail(user.getEmail());
         if (existingUser.isPresent()) {
@@ -51,7 +56,7 @@ public class UserService {
                 if (attributes.get(UPDATED_AT_KEY) instanceof Instant instant) {
                     idpModifiedDate = instant;
                 } else {
-                    idpModifiedDate = Instant.ofEpochSecond((Integer) attributes.get(UPDATED_AT_KEY));
+                    idpModifiedDate = Instant.parse(attributes.get(UPDATED_AT_KEY).toString());
                 }
                 if (idpModifiedDate.isAfter(lastModifiedDate) || forceResync) {
                     updateUser(user);

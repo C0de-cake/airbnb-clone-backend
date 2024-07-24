@@ -10,7 +10,7 @@
     </parent>
     <groupId>fr.codecake</groupId>
     <artifactId>airbnb-clone-back</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>airbnb-clone-back</name>
     <description>Airbnb Clone API</description>
     <properties>
@@ -21,10 +21,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-oauth2-client</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,6 +95,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                        <image>
+                            <name>merlinofcha0s/airbnb-clone-backend:${project.version}</name>
+                            <env>
+                                <BP_JVM_VERSION>21.0.3</BP_JVM_VERSION>
+                                <BP_JVM_CDS_ENABLED>true</BP_JVM_CDS_ENABLED>
+                            </env>
+                        </image>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
