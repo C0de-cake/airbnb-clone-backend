@@ -24,11 +24,11 @@ spring:
       ddl-auto: validate
     properties:
       hibernate:
-        default_schema: airbnb_clone
+        default_schema: public
   liquibase:
     contexts: dev
     change-log: classpath:db/changelog/master.xml
-    default-schema: airbnb_clone
+    default-schema: public
     enabled: true
   #    drop-first: true
   servlet:

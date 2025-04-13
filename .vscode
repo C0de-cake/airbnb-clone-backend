@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Debug Spring Boot",
+      "request": "launch",
+      "mainClass": "fr.codecake.airbnbclone.AirbnbCloneBackApplication",
+      "projectName": "airbnb-clone-backend",
+      "env": {
+        "DOCKER_HOST": "npipe:////./pipe/docker_engine"
+      }
+    }
+  ]
+}
