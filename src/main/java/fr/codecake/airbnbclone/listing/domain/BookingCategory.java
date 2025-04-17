@@ -14,5 +14,6 @@ public enum BookingCategory {
     ROOMS,
     EARTH_HOMES,
     TOWER,
-    CAVES, LUXES, CHEFS_KITCHEN
+    CAVES, LUXES, CHEFS_KITCHEN,
+    SKIING
 }

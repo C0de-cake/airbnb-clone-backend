@@ -12,7 +12,7 @@ spring:
   jpa:
     properties:
       hibernate:
-        default_schema: public
+        default_schema: airbnb_clone
   liquibase:
     contexts: prod
-    default-schema: public
+    default-schema: airbnb_clone

@@ -20,16 +20,23 @@
     <dependencies>
 
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.3.232</version>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-oauth2-jose</artifactId>
+            <version>6.4.4</version>
         </dependency>
 
 
         <dependency>
-            <groupId>io.github.cdimascio</groupId>
-            <artifactId>dotenv-java</artifactId>
-            <version>3.2.0</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+            <version>3.4.4</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>com.github.leleuj.springframework.security</groupId>
+            <artifactId>spring-security-oauth-client</artifactId>
+            <version>1.1.0</version>
         </dependency>
 
         <dependency>
@@ -71,6 +78,12 @@
             <groupId>org.mapstruct</groupId>
             <artifactId>mapstruct-processor</artifactId>
             <version>${mapstruct.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>auth0</artifactId>
+            <version>2.10.1</version>
         </dependency>
 
         <dependency>
